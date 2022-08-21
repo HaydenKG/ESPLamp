@@ -1,0 +1,10 @@
+Frontend: 
+    Save color value and only emit if there is a change
+    Fix list of animations not being concated correctly += fix
+
+Backend:
+    Implement missing requests
+    Implement animations
+
+helpful: 
+https://makesmart.net/esp8266-get-variablen-auslesen/
