@@ -19,7 +19,27 @@ int Red = 205;
 int Green = 20;
 int Blue = 0;
 float Brightness = .5;
-String animations[] = {"Solid", "Sparkle", "Fairytale", "Glow", "Fade"};
+String animations[] = {"Solid", "Confetti", "Rainbow", "Hue"};
+boolean breakAnimation = false;
+long interval = 1000;
+unsigned long previousMillis = 0;
+
+int hue = 0;
+
+void draw() {
+  // The EVERY_N_MILLISECONDS block runs its code every N milliseconds
+  EVERY_N_MILLISECONDS(100) {
+    hue++;
+  }
+  for(int i = 0; i < 20; i++){
+    for (int index = 0; index < NUM_LEDS; index++) {
+      leds[index] = CHSV(hue, 255, 255);
+      FastLED.show();
+    }
+    hue += 10;
+    delay(1000);
+  }
+}
 
 ESP8266WebServer server(80); //Server on port 80
 
@@ -98,15 +118,50 @@ void adaptBrightness(){
   server.send(200, "text/plane", brightnessValue);
 }
 
+void solidAnim(){
+  FastLED.clear();
+  for(int i=0; i<NUM_LEDS; i++){
+      leds[i].setRGB(Red * Brightness, Green * Brightness, Blue* Brightness); 
+  }
+  FastLED.show();
+}
+
+void confetti(){
+  // random colored speckles that blink in and fade smoothly
+  fadeToBlackBy( leds, NUM_LEDS, 10);
+  int pos = random16(NUM_LEDS);
+  leds[pos] += CHSV( 100 + random8(64), 200, 255);
+  FastLED.show();
+}
+
+void rainbow() {
+  // FastLED's built-in rainbow generator
+  fill_rainbow( leds, NUM_LEDS, hue, 7);
+  FastLED.show();
+}
+
 void adaptAnimationType(){
   String animationTypeValue = server.arg("value");
   Serial.println(animationTypeValue);
   bool matchesAny = false;
   for(int i = 0; i < sizeof animations/sizeof animations[0]; i++){
-    if(animations[i].equals(animationTypeValue)){
-      Serial.println(animations[i]);
+    if(animationTypeValue.equals("Solid")){
+      solidAnim();
       matchesAny = true;
-    }
+      break;
+    } else if(animationTypeValue.equals("Confetti")) {
+      confetti();
+      matchesAny = true;
+      break;
+    } else if(animationTypeValue.equals("Rainbow")) {
+      rainbow();
+      matchesAny = true;
+      break;
+    } else if(animationTypeValue.equals("Hue")) {
+      draw();
+      matchesAny = true;
+      break;
+    } 
   }
   String match = "Matches " + String(matchesAny);
   server.send(200, "text/plane", match);
@@ -128,7 +183,7 @@ void sendAnimations(){
 }
 
 void setup() {
- Serial.begin(115200);
+  Serial.begin(115200);
   
   WiFi.begin(ssid, password);     //Connect to your WiFi router
   Serial.println("");

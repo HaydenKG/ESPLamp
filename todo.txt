@@ -5,6 +5,9 @@ Frontend:
 Backend:
     Implement missing requests
     Implement animations
+    Fix better brightness adjustment
+
+    Animation wishlist: Fire, (Gold) sparkle, fade (slowly moving), fade between two colors, 
 
 helpful: 
 https://makesmart.net/esp8266-get-variablen-auslesen/
