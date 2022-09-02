@@ -18,6 +18,7 @@ const char MAIN_page[] PROGMEM = R"=====(
         body {
             background: linear-gradient(135deg, var(--prim_color), var(--sec_color));
             width: 100%;
+            max-width: 800px;
             height: 100vh;
             margin: 0;
             font-family: 'Open Sans', sans-serif;
@@ -44,7 +45,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             flex-direction: column;
             align-items: center;
             height: 100%;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
 
         li {
@@ -105,7 +106,8 @@ const char MAIN_page[] PROGMEM = R"=====(
             align-content: space-evenly;
             align-items: start;
             width: 50%;
-            height: 100%;
+            height: 80%;
+            padding: 10% 0;
         }
 
         .input_icon {
@@ -263,7 +265,7 @@ const char MAIN_page[] PROGMEM = R"=====(
     <div id="navigationbar"><div id="topDivider"></div><p id="lightPanelBtn" onclick="movePanel(0)">Light</p><div id="middleDivider"></div><p id="animationsPanelBtn" onclick="movePanel(1)">Animations</p></div>
 
     <script>
-        let animations = ["Solid", "Sparkle", "Fairytale", "Glow", "Fade"];
+        let animations = ["Solid", "Confetti", "Rainbow"];
         let oldSelectedAnim = undefined;
         let canvas = getEl("colorwheel");
         let mainPanel = getEl("main_panel", true);
@@ -272,6 +274,7 @@ const char MAIN_page[] PROGMEM = R"=====(
         let lightPanelButton = getEl("lightPanelBtn"); 
         lightPanelButton.classList.add("selectedPanel");
         let animationsPanelButton = getEl("animationsPanelBtn"); 
+        getEl("confirm_btn", false).style.visibility = "hidden";
 
         function getEl(element, isClass = false) {
             if (isClass) return document.getElementsByClassName(element)[0];
@@ -279,6 +282,8 @@ const char MAIN_page[] PROGMEM = R"=====(
         }
 
         function initAnimationList(animation_list){
+            animation_list.filter(n => n);
+            console.log(animation_list);
             let list = getEl("animation_list", false);
             if(list.childElementCount > 0)
                 list.replaceChildren()
@@ -351,6 +356,8 @@ const char MAIN_page[] PROGMEM = R"=====(
             } else {
                 document.body.style.setProperty('--sec_color', value);
             }
+            debugger;
+            getEl("confirm_btn", false).style.visibility = "visible";
         }
     </script>
     <script>
@@ -375,6 +382,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             if (newColor == choosenColor) return;
             choosenColor = newColor;
             let primcolor = hex2rgb(newColor);
+            getEl("confirm_btn", false).style.visibility = "hidden";
             fetch('http://192.168.178.52/changeColor?color1=' + primcolor[0] + '&color2=' + primcolor[1] + '&color3=' + primcolor[2])
                 .then(response => response.text())
                 .then(data => console.log(data))

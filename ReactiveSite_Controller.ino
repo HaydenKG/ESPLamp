@@ -9,39 +9,30 @@
 #define LED_PIN 12 
 #define NUM_LEDS 60
 #define INBUILT_LED 2
+#define FRAMES_PER_SECOND 30
 
 CRGB leds[NUM_LEDS];
 
 //SSID and Password of your WiFi router
 const char* ssid = "FRITZ!Box 7530 EH"; //Enter SSID
 const char* password = "16667275830538943450"; //Enter Password
+
 int Red = 205;
 int Green = 20;
 int Blue = 0;
-float Brightness = .5;
-String animations[] = {"Solid", "Confetti", "Rainbow", "Hue"};
+
+String animations[] = {"Solid", "Confetti", "Rainbow", "Fire"};
+String currentAnimation = "Solid";
+boolean alreadySolid = true;
 boolean breakAnimation = false;
-long interval = 1000;
-unsigned long previousMillis = 0;
-
-int hue = 0;
-
-void draw() {
-  // The EVERY_N_MILLISECONDS block runs its code every N milliseconds
-  EVERY_N_MILLISECONDS(100) {
-    hue++;
-  }
-  for(int i = 0; i < 20; i++){
-    for (int index = 0; index < NUM_LEDS; index++) {
-      leds[index] = CHSV(hue, 255, 255);
-      FastLED.show();
-    }
-    hue += 10;
-    delay(1000);
-  }
-}
 
 ESP8266WebServer server(80); //Server on port 80
+
+// This routine is executed when you open its IP in browser
+void handleRoot() {
+ String s = MAIN_page; //Read HTML contents
+ server.send(200, "text/html", s); //Send web page
+}
 
 void setColor(int red, int green, int blue){
   Red = red;
@@ -50,16 +41,10 @@ void setColor(int red, int green, int blue){
 
   FastLED.clear();
   for(int i=0; i<NUM_LEDS; i++){
-      leds[i].setRGB(red * Brightness, green * Brightness, blue * Brightness); 
+      leds[i].setRGB(red, green, blue); 
       FastLED.show();
       delay(20);
     }
-}
-
-// This routine is executed when you open its IP in browser
-void handleRoot() {
- String s = MAIN_page; //Read HTML contents
- server.send(200, "text/html", s); //Send web page
 }
 
 void changeColor() {
@@ -101,19 +86,10 @@ void handleLED() {
 }
 
 
-//lerp over 2 seconds
+//lerp over 2 seconds?
 void adaptBrightness(){
   String brightnessValue = server.arg("value");
-  float temporaryValue = brightnessValue.toInt();
-
-  Brightness = temporaryValue / 255; 
-  int redDimmed = (Red * Brightness);
-  Serial.println(redDimmed);
-  FastLED.clear();
-  for(int i=0; i<NUM_LEDS; i++){
-      leds[i].setRGB(Red * Brightness, Green * Brightness, Blue* Brightness); 
-  }
-  FastLED.show();
+  FastLED.setBrightness(brightnessValue.toInt());
   brightnessValue += " received by the server";
   server.send(200, "text/plane", brightnessValue);
 }
@@ -121,7 +97,7 @@ void adaptBrightness(){
 void solidAnim(){
   FastLED.clear();
   for(int i=0; i<NUM_LEDS; i++){
-      leds[i].setRGB(Red * Brightness, Green * Brightness, Blue* Brightness); 
+      leds[i].setRGB(Red, Green, Blue); 
   }
   FastLED.show();
 }
@@ -130,14 +106,18 @@ void confetti(){
   // random colored speckles that blink in and fade smoothly
   fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
-  leds[pos] += CHSV( 100 + random8(64), 200, 255);
-  FastLED.show();
+  leds[pos] += CHSV(20 + random8(), 20 + random8(), 20 + random8());
 }
 
 void rainbow() {
   // FastLED's built-in rainbow generator
-  fill_rainbow( leds, NUM_LEDS, hue, 7);
-  FastLED.show();
+  fill_rainbow( leds, NUM_LEDS, 0, 7);
+}
+
+void fire() {
+  fadeToBlackBy( leds, NUM_LEDS, 10);
+  int pos = random16(NUM_LEDS);
+  leds[pos] += CHSV(100 + random8(155), random8(30), 0);
 }
 
 void adaptAnimationType(){
@@ -146,23 +126,20 @@ void adaptAnimationType(){
   bool matchesAny = false;
   for(int i = 0; i < sizeof animations/sizeof animations[0]; i++){
     if(animationTypeValue.equals("Solid")){
-      solidAnim();
       matchesAny = true;
       break;
     } else if(animationTypeValue.equals("Confetti")) {
-      confetti();
       matchesAny = true;
       break;
     } else if(animationTypeValue.equals("Rainbow")) {
-      rainbow();
       matchesAny = true;
       break;
-    } else if(animationTypeValue.equals("Hue")) {
-      draw();
+    } else if(animationTypeValue.equals("Fire")) {
       matchesAny = true;
       break;
     } 
   }
+  currentAnimation = animationTypeValue;
   String match = "Matches " + String(matchesAny);
   server.send(200, "text/plane", match);
 }
@@ -217,13 +194,32 @@ void setup() {
 
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
+  FastLED.setBrightness(124);
   FastLED.clear();
   FastLED.show();
-  srand(time(NULL));
+  // srand(time(NULL));
 
   setColor(205, 20, 0);
 }
 
 void loop(void){
   server.handleClient();          //Handle client requests
+
+  if(currentAnimation.equals("Solid")){
+    if(!alreadySolid){
+      alreadySolid = true;
+      solidAnim();
+    }
+  } else if(currentAnimation.equals("Confetti")) {
+    confetti();
+  } else if(currentAnimation.equals("Rainbow")) {
+    rainbow();
+  } else if(currentAnimation.equals("Fire")) {
+    fire();
+  } else {
+    alreadySolid = false;
+  }
+
+  FastLED.show(); // display this frame
+  FastLED.delay(1000 / FRAMES_PER_SECOND);
 }

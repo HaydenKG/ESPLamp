@@ -1,12 +1,9 @@
 Frontend: 
-    Save color value and only emit if there is a change
-    Fix list of animations not being concated correctly += fix
 
 Backend:
-    Implement missing requests
-    Implement animations
-    Fix better brightness adjustment
+    Implement animation speed by adjusting FRAMES_PER_SECOND? 
 
+    
     Animation wishlist: Fire, (Gold) sparkle, fade (slowly moving), fade between two colors, 
 
 helpful: 
