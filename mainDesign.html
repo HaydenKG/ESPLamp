@@ -79,7 +79,8 @@
             display: flex;
             position: fixed;
             width: 200%;
-            height: 100vh;
+            height: 90%;
+            padding: 5% 0;
             flex-direction: row;
             transform: translateX(0);
             transition: all .2s;
@@ -263,7 +264,7 @@
     <div id="navigationbar"><div id="topDivider"></div><p id="lightPanelBtn" onclick="movePanel(0)">Light</p><div id="middleDivider"></div><p id="animationsPanelBtn" onclick="movePanel(1)">Animations</p></div>
 
     <script>
-        let animations = ["Solid", "Confetti", "Rainbow", "Fire"];
+        let animations = ["Solid", "Confetti", "Rainbow"];
         let oldSelectedAnim = undefined;
         let canvas = getEl("colorwheel");
         let mainPanel = getEl("main_panel", true);
@@ -281,6 +282,7 @@
 
         function initAnimationList(animation_list){
             animation_list.filter(n => n);
+            console.log(animation_list);
             let list = getEl("animation_list", false);
             if(list.childElementCount > 0)
                 list.replaceChildren()

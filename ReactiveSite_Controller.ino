@@ -115,7 +115,7 @@ void rainbow() {
 }
 
 void fire() {
-  fadeToBlackBy( leds, NUM_LEDS, 10);
+  // fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV(100 + random8(155), random8(30), 0);
 }
@@ -196,8 +196,6 @@ void setup() {
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
   FastLED.setBrightness(124);
   FastLED.clear();
-  FastLED.show();
-  // srand(time(NULL));
 
   setColor(205, 20, 0);
 }
@@ -208,15 +206,16 @@ void loop(void){
   if(currentAnimation.equals("Solid")){
     if(!alreadySolid){
       alreadySolid = true;
-      solidAnim();
+      setColor(Red, Green, Blue);
     }
   } else if(currentAnimation.equals("Confetti")) {
     confetti();
+    alreadySolid = false;
   } else if(currentAnimation.equals("Rainbow")) {
     rainbow();
+    alreadySolid = false;
   } else if(currentAnimation.equals("Fire")) {
     fire();
-  } else {
     alreadySolid = false;
   }
 
