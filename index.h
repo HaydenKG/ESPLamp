@@ -186,9 +186,9 @@ const char MAIN_page[] PROGMEM = R"=====(
         #navigationbar{
             position: fixed;
             bottom: 0;
-            width: 95vw;
+            width: 100vw;
             height: 50px;
-            padding: 10px;
+            padding: 10px 0;
             display: grid;
             grid-template-columns: 1fr .1fr 1fr;
             justify-items: center;
