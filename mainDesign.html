@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LED control</title>
+    <link rel="icon"  type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAglJREFUOI2lk71rU1EYh59zk8bbJNVbDcZo0dI6qEtiHAQnMSAUBy+CSxYv/gOmk+Li0smlcVQQHKQZvZtQqGgXEWw0DuIH7Y2StrQUkt6oyc3HPQ75sPnApe90eM/v97wfnAP7DDGQKX7QyAfv8DOke1a1mJaFQ1k+ap8xT8IjE1HaK1d6zPKpweiuRaAaxl+ba44w5XWY8vxm7hSNaxq1zYfYxvBe5A0DeddCLughef54//U93/qD+yPbmQWK1jLbXYgCMCljmp+1efg0i0iayPp6P2Bc3WBs1Po6TXN2ksZ8EUvrAk6zkzqLnUG8NAEmnPpAg5paQFMLXCRkHmEto5JNdQFnKOtRSksd8YnqEIC/gOYvAODl9ZKHt9dbZ+Acu9EmZDviWLnCzKvpx8H8GMEfBwnkA6jf3l/w/vKVAXwsZl1qsS7gWAO8jX/V/E0XYMVF4goXkBygFvF6mpsAqMsoEnDagHCTnE8hDlgAEafO7SurT/aO8P3S5Yjrb7+bEHHq5Nhq7+BoHTNcJdER/2+JABwmwThmd4RQg3QA8nKLRRHGnBi2xJZZyqvoVEhSZrJHIAsY7hcs+Q7dfqPIAQIgDXR5E0vOoHdyPX9BrmBImzQ2XrHDLTbI4gB/iLsVEqJGUjgY4nmr/QEAgHyB5lZJUUKXRaKiAjjkqGIqNmnxjFK/Z1/xF8lNxL1iFSVSAAAAAElFTkSuQmCC"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
@@ -185,7 +186,8 @@
         #navigationbar{
             position: fixed;
             bottom: 0;
-            width: 100vw;
+            left: 5vw;
+            width: 90vw;
             height: 50px;
             padding: 10px 0;
             display: grid;
@@ -206,7 +208,7 @@
 
         #topDivider{
             position: absolute;
-            width: 80%;
+            width: 90%;
             top: 0;
             height: 2px;
             border-width: 0;
@@ -237,7 +239,7 @@
                     <label for="sec_c">Sec. color</label>
                     <input  type="color" onchange="setColor('sec', this.value)" id="sec_c">
                 </div>
-                <button id="confirm_btn" onclick="sendNewColor()">OK</button>
+                <button id="confirm_btn" onclick="sendNewColor()">Send</button>
             </section>
             <span>
                 <img class="input_icon" id="brightnessIcon">
@@ -255,7 +257,7 @@
             </section>
             <span>
                 <img class="input_icon" id="animationspeedIcon">
-                <input id="anim_speedinput" type="range" min="0" max="10"
+                <input id="anim_speedinput" type="range" min="1" max="10"
                     oninput="adaptAnimationSpeedIndicator(this.value)" onchange="sendAnimationSpeed(this.value)">
                 <p id="anim_speed_value">5</p>
             </span>
@@ -281,7 +283,7 @@
         }
 
         function initAnimationList(animation_list){
-            animation_list.filter(n => n);
+            animation_list = animation_list.filter(n => n);
             console.log(animation_list);
             let list = getEl("animation_list", false);
             if(list.childElementCount > 0)
@@ -355,20 +357,11 @@
             } else {
                 document.body.style.setProperty('--sec_color', value);
             }
-            debugger;
             getEl("confirm_btn", false).style.visibility = "visible";
         }
     </script>
     <script>
         //arduino communication and helpers
-        let choosenColor = "";
-
-        const hex2rgb = (hex) => {
-            const r = parseInt(hex.slice(1, 3), 16)
-            const g = parseInt(hex.slice(3, 5), 16)
-            const b = parseInt(hex.slice(5, 7), 16)
-            return [r, g, b]
-        }
 
         function sendBrightness(value) {
             fetch('http://192.168.178.52/brightness?value=' + value)
@@ -377,12 +370,16 @@
         }
 
         function sendNewColor() {
-            let newColor = getEl("prim_c").value
-            if (newColor == choosenColor) return;
-            choosenColor = newColor;
-            let primcolor = hex2rgb(newColor);
+            let priColor = getEl("prim_c").value;
+            priColor = priColor.replace("#", "0x");
+            let primaryColor = parseInt(priColor);
+
+            let secColor = getEl("sec_c").value;
+            secColor = secColor.replace("#", "0x");
+            let secondaryColor = parseInt(secColor);
+
             getEl("confirm_btn", false).style.visibility = "hidden";
-            fetch('http://192.168.178.52/changeColor?color1=' + primcolor[0] + '&color2=' + primcolor[1] + '&color3=' + primcolor[2])
+            fetch('http://192.168.178.52/changeColor?color1=' + primaryColor + '&color2=' + secondaryColor)
                 .then(response => response.text())
                 .then(data => console.log(data))
                 .catch(error => console.error(error));

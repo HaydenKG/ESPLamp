@@ -10,8 +10,6 @@
 
 #define LED_PIN 12 
 #define NUM_LEDS 60
-#define INBUILT_LED 2
-#define FRAMES_PER_SECOND 30
 
 CRGB leds[NUM_LEDS];
 
@@ -19,10 +17,15 @@ CRGB leds[NUM_LEDS];
 const char* ssid = "FRITZ!Box 7530 EH"; //Enter SSID
 const char* password = "16667275830538943450"; //Enter Password
 
-int Red = 205;
-int Green = 20;
-int Blue = 0;
+int primaryColor = 13440000;
+int secondaryColor = 0;
+
 int brightness = 124;
+int frames_per_second = 30;
+
+unsigned long startMillis;
+unsigned long currentMillis;
+unsigned long period = 500;
 
 String animations[] = {"Solid", "Confetti", "Rainbow", "Fire", "Wave", "Fairy", "Lava", "Sparkle" };
 String currentAnimation = "Solid";
@@ -37,22 +40,18 @@ void handleRoot() {
  server.send(200, "text/html", s); //Send web page
 }
 
-void setColor(int red, int green, int blue){
-  Red = red;
-  Green = green;
-  Blue = blue;
-
+void setColor(int color){
   FastLED.clear();
   for(int i=0; i<NUM_LEDS; i++){
-      leds[i].setRGB(red, green, blue); 
+      leds[i] = color; 
       FastLED.show();
       delay(20);
     }
 }
 
-void changeColor() {
+void setColors() {
   String message = "Args received:\n";
-  int colorValue[3];
+  int colorValue[2];
   for (int i = 0; i < server.args(); i++) {
 
     message += "Arg no" + (String)i + " –> ";
@@ -63,32 +62,20 @@ void changeColor() {
   
   Serial.println(colorValue[0]);
   Serial.println(colorValue[1]);
-  Serial.println(colorValue[2]);
 
-  setColor(colorValue[0], colorValue[1], colorValue[2]);
+  if(primaryColor != colorValue[0]){
+    primaryColor = colorValue[0];
+    if(currentAnimation.equals("Solid")){
+      setColor(primaryColor);
+    }
+  }
+  secondaryColor = colorValue[1];
   
   server.send(200, "text/plane", message);
 }
 
-void handleLED() {
- String ledState = "OFF";
- String t_state = server.arg("LEDstate"); //Refer  xhttp.open("GET", "setLED?LEDstate="+led, true);
- Serial.println(t_state);
- if(t_state == "1") {
-  digitalWrite(INBUILT_LED, LOW); //LED ON
-  ledState = "ON"; //Feedback parameter
- }
- else {
-  digitalWrite(INBUILT_LED, HIGH); //LED OFF
-  ledState = "OFF"; //Feedback parameter  
- }
- 
- server.send(200, "text/plane", ledState); //Send web page
-}
-
-
 //lerp over 2 seconds?
-void adaptBrightness(){
+void setBrightness(){
   String brightnessValue = server.arg("value");
   brightness = brightnessValue.toInt();
   FastLED.setBrightness(brightnessValue.toInt());
@@ -96,15 +83,8 @@ void adaptBrightness(){
   server.send(200, "text/plane", brightnessValue);
 }
 
-void solidAnim(){
+void setAnimation(){
   FastLED.clear();
-  for(int i=0; i<NUM_LEDS; i++){
-      leds[i].setRGB(Red, Green, Blue); 
-  }
-  FastLED.show();
-}
-
-void adaptAnimationType(){
   String animationTypeValue = server.arg("value");
   Serial.println(animationTypeValue);
   bool matchesAny = false;
@@ -119,9 +99,19 @@ void adaptAnimationType(){
   server.send(200, "text/plane", match);
 }
 
-void adaptAnimationspeed(){
+void setAnimationSpeed(){
   String animationSpeedValue = server.arg("value");
-  animationSpeedValue += " received by the server";
+  int animationSpeedInt = animationSpeedValue.toInt();
+  if(animationSpeedInt == 10){
+    period = 10;
+  } else if(animationSpeedInt == 9) {
+    period = 100;
+  } else {
+    period = 200 * (10 - animationSpeedValue.toInt());
+  }
+  animationSpeedValue += " received by the server. Delay is: ";
+  animationSpeedValue += period;
+  Serial.println(period);
   server.send(200, "text/plane", animationSpeedValue);
 }
 
@@ -140,29 +130,25 @@ void setup() {
   WiFi.begin(ssid, password);     //Connect to your WiFi router
   Serial.println("");
 
-  //Onboard LED port Direction output
-  pinMode(INBUILT_LED, OUTPUT); 
-  digitalWrite(INBUILT_LED, HIGH);
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
 
-  //If connection successful show IP address in serial monitor
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //IP address assigned to your ESP
  
-  server.on("/", handleRoot);      //Which routine to handle at root location. This is display page
+  //Event handler for the web requests
+  server.on("/", handleRoot);      
   server.on("/getAnimation", sendAnimations);
-  server.on("/setLED", handleLED);
-  server.on("/brightness", adaptBrightness);
-  server.on("/changeColor", changeColor);
-  server.on("/animationType", adaptAnimationType);
-  server.on("/animationSpeed", adaptAnimationspeed);
+  server.on("/brightness", setBrightness);
+  server.on("/changeColor", setColors);
+  server.on("/animationType", setAnimation);
+  server.on("/animationSpeed", setAnimationSpeed);
 
   server.begin();               
   Serial.println("HTTP server started");
@@ -172,36 +158,42 @@ void setup() {
   FastLED.setBrightness(brightness);
   FastLED.clear();
 
-  setColor(205, 20, 0);
+  setColor(13440000);
+
+  startMillis = millis();
 }
 
 void loop(void){
   server.handleClient();          //Handle client requests
+  currentMillis = millis();
 
   if(currentAnimation.equals("Solid")){
     if(!alreadySolid){
-      setColor(Red, Green, Blue);
+      setColor(primaryColor);
       alreadySolid = true;
     }
   } else {
     alreadySolid = false;
   }
-  if(currentAnimation.equals("Confetti")) {
-    confetti(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Rainbow")) {
-    rainbow(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Fire")) {
-    fire(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Wave")) {
-    wave(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Fairy")) {
-    fairy(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Lava")){
-    lava(leds, NUM_LEDS);
-  } else if(currentAnimation.equals("Sparkle")){
-    sparkle(leds, NUM_LEDS);
+  if(currentMillis - startMillis >= period){
+    if(currentAnimation.equals("Confetti")) {
+      confetti(leds, NUM_LEDS);
+    } else if(currentAnimation.equals("Rainbow")) {
+      rainbow(leds, NUM_LEDS);
+    } else if(currentAnimation.equals("Fire")) {
+      fire(leds, NUM_LEDS);
+    } else if(currentAnimation.equals("Wave")) {
+      wave(leds, NUM_LEDS, primaryColor, secondaryColor);
+    } else if(currentAnimation.equals("Fairy")) {
+      fairy(leds, NUM_LEDS);
+    } else if(currentAnimation.equals("Lava")){
+      lava(leds, NUM_LEDS);
+    } else if(currentAnimation.equals("Sparkle")){
+      sparkle(leds, NUM_LEDS, primaryColor, secondaryColor);
+    }
+    startMillis = currentMillis;
   }
 
-  FastLED.show(); // display this frame
-  FastLED.delay(1000 / FRAMES_PER_SECOND);
+  FastLED.show();
+  FastLED.delay(1000 / frames_per_second);
 }
