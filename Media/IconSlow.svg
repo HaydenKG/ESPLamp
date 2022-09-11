@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <rect width="256" height="256" id="artboard_1" />
+    <clipPath id="clip_1">
+      <use xlink:href="#artboard_1" clip-rule="evenodd" />
+    </clipPath>
+  </defs>
+  <g id="Artboard" clip-path="url(#clip_1)">
+    <g id="SpeedIcon-2" transform="translate(69.5 88.17688)" artboard="b2c107c6-2b83-465c-95ee-60c620037ff6">
+      <path d="M0 1L64 1" id="Line" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" />
+      <path d="M62.5 40.8231L117 40.8231" id="Line-Copy" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" />
+      <path d="M22 79.7462L89 79.7462" id="Line-Copy-2" fill="none" fill-rule="evenodd" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>

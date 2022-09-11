@@ -1,10 +1,13 @@
 Frontend: 
 
 Backend:
-    Implement animation speed by adjusting FRAMES_PER_SECOND? 
+    Fix animationspeed    
+    Fairy colors to greenish
+    Fire has one green color too
+    Sparkle is not realy sparkling. Introduce fading
+
 
     
-    Animation wishlist: Fire, (Gold) sparkle, fade (slowly moving), fade between two colors, 
 
 helpful: 
 https://makesmart.net/esp8266-get-variablen-auslesen/
