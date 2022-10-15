@@ -127,6 +127,16 @@ void sendAnimations(){
 void setup() {
   Serial.begin(115200);
   
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
+  FastLED.setBrightness(brightness);
+  FastLED.clear();
+  
+  setColor(13440000);
+
   WiFi.begin(ssid, password);     //Connect to your WiFi router
   Serial.println("");
 
@@ -152,15 +162,12 @@ void setup() {
 
   server.begin();               
   Serial.println("HTTP server started");
-
-  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setMaxPowerInVoltsAndMilliamps(5, 500);
-  FastLED.setBrightness(brightness);
-  FastLED.clear();
-
-  setColor(13440000);
-
+  
   startMillis = millis();
+
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(2000); 
+  digitalWrite(LED_BUILTIN, HIGH); 
 }
 
 void loop(void){

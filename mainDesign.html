@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HLED control</title>
-    <link rel="icon"  type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAglJREFUOI2lk71rU1EYh59zk8bbJNVbDcZo0dI6qEtiHAQnMSAUBy+CSxYv/gOmk+Li0smlcVQQHKQZvZtQqGgXEWw0DuIH7Y2StrQUkt6oyc3HPQ75sPnApe90eM/v97wfnAP7DDGQKX7QyAfv8DOke1a1mJaFQ1k+ap8xT8IjE1HaK1d6zPKpweiuRaAaxl+ba44w5XWY8vxm7hSNaxq1zYfYxvBe5A0DeddCLughef54//U93/qD+yPbmQWK1jLbXYgCMCljmp+1efg0i0iayPp6P2Bc3WBs1Po6TXN2ksZ8EUvrAk6zkzqLnUG8NAEmnPpAg5paQFMLXCRkHmEto5JNdQFnKOtRSksd8YnqEIC/gOYvAODl9ZKHt9dbZ+Acu9EmZDviWLnCzKvpx8H8GMEfBwnkA6jf3l/w/vKVAXwsZl1qsS7gWAO8jX/V/E0XYMVF4goXkBygFvF6mpsAqMsoEnDagHCTnE8hDlgAEafO7SurT/aO8P3S5Yjrb7+bEHHq5Nhq7+BoHTNcJdER/2+JABwmwThmd4RQg3QA8nKLRRHGnBi2xJZZyqvoVEhSZrJHIAsY7hcs+Q7dfqPIAQIgDXR5E0vOoHdyPX9BrmBImzQ2XrHDLTbI4gB/iLsVEqJGUjgY4nmr/QEAgHyB5lZJUUKXRaKiAjjkqGIqNmnxjFK/Z1/xF8lNxL1iFSVSAAAAAElFTkSuQmCC"/>
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAglJREFUOI2lk71rU1EYh59zk8bbJNVbDcZo0dI6qEtiHAQnMSAUBy+CSxYv/gOmk+Li0smlcVQQHKQZvZtQqGgXEWw0DuIH7Y2StrQUkt6oyc3HPQ75sPnApe90eM/v97wfnAP7DDGQKX7QyAfv8DOke1a1mJaFQ1k+ap8xT8IjE1HaK1d6zPKpweiuRaAaxl+ba44w5XWY8vxm7hSNaxq1zYfYxvBe5A0DeddCLughef54//U93/qD+yPbmQWK1jLbXYgCMCljmp+1efg0i0iayPp6P2Bc3WBs1Po6TXN2ksZ8EUvrAk6zkzqLnUG8NAEmnPpAg5paQFMLXCRkHmEto5JNdQFnKOtRSksd8YnqEIC/gOYvAODl9ZKHt9dbZ+Acu9EmZDviWLnCzKvpx8H8GMEfBwnkA6jf3l/w/vKVAXwsZl1qsS7gWAO8jX/V/E0XYMVF4goXkBygFvF6mpsAqMsoEnDagHCTnE8hDlgAEafO7SurT/aO8P3S5Yjrb7+bEHHq5Nhq7+BoHTNcJdER/2+JABwmwThmd4RQg3QA8nKLRRHGnBi2xJZZyqvoVEhSZrJHIAsY7hcs+Q7dfqPIAQIgDXR5E0vOoHdyPX9BrmBImzQ2XrHDLTbI4gB/iLsVEqJGUjgY4nmr/QEAgHyB5lZJUUKXRaKiAjjkqGIqNmnxjFK/Z1/xF8lNxL1iFSVSAAAAAElFTkSuQmCC" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
@@ -62,6 +63,21 @@
             overflow-y: auto;
         }
 
+        #animation_list::-webkit-scrollbar {
+            width: 5px;
+            margin-left: 4px;
+        }
+
+        #animation_list::-webkit-scrollbar-track {
+            background-color: #b6b6b642;
+            border-radius: 10px;
+        }
+
+        #animation_list::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background-color: #d1d1d1;
+        }
+
         li {
             margin: 10px 0;
             color: #c9c9c9;
@@ -76,7 +92,8 @@
             border-bottom: 1px solid;
         }
 
-        h3, h4 {
+        h3,
+        h4 {
             margin: 3px;
             text-align: center;
         }
@@ -168,7 +185,7 @@
             width: 70vw;
         }
 
-        #colorSelection hr{
+        #colorSelection hr {
             width: 100%;
         }
 
@@ -196,12 +213,12 @@
             top: 10%;
         }
 
-        #animation_section{
+        #animation_section {
             min-width: 70vw;
             height: 30vh;
         }
 
-        #navigationbar{
+        #navigationbar {
             position: fixed;
             bottom: 0;
             left: 5vw;
@@ -224,7 +241,7 @@
             transition: all .2s;
         }
 
-        #topDivider{
+        #topDivider {
             position: absolute;
             width: 90%;
             top: 0;
@@ -233,11 +250,11 @@
             background: white;
         }
 
-        #middleDivider{
+        #middleDivider {
             width: 2px;
             height: 90%;
             background-color: #fff;
-        }        
+        }
     </style>
 </head>
 
@@ -251,11 +268,12 @@
                 <hr>
                 <div>
                     <label for="prim_c">Prim. color</label>
-                    <input type="color" oninput="changeColorInput_BGColor(this)" onchange="setColor('prim', this.value)" id="prim_c" value="#CD1400">
+                    <input type="color" oninput="changeColorInput_BGColor(this)" onchange="setColor('prim', this.value)"
+                        id="prim_c" value="#CD1400">
                 </div>
                 <div>
                     <label for="sec_c">Sec. color</label>
-                    <input  type="color" onchange="setColor('sec', this.value)" id="sec_c">
+                    <input type="color" onchange="setColor('sec', this.value)" id="sec_c">
                 </div>
                 <button id="confirm_btn" onclick="sendNewColor()">Send</button>
             </section>
@@ -282,8 +300,8 @@
                     <p id="anim_speed_value">5</p>
                     <img class="input_icon" id="animSpeedIconFast">
                 </span>
-                <input id="anim_speedinput" type="range" min="0" max="10"
-                    oninput="adjustinputRange(this, 'anim')" onchange="sendAnimationSpeed(this.value)">
+                <input id="anim_speedinput" type="range" min="0" max="10" oninput="adjustinputRange(this, 'anim')"
+                    onchange="sendAnimationSpeed(this.value)">
             </span>
         </div>
     </div>
@@ -301,9 +319,9 @@
         let mainPanel = getEl("main_panel", true);
         let colorSelection = getEl("color_selection_panel");
         let background = getEl("bg", true);
-        let lightPanelButton = getEl("lightPanelBtn"); 
+        let lightPanelButton = getEl("lightPanelBtn");
         lightPanelButton.classList.add("selectedPanel");
-        let animationsPanelButton = getEl("animationsPanelBtn"); 
+        let animationsPanelButton = getEl("animationsPanelBtn");
         getEl("confirm_btn", false).style.visibility = "hidden";
         adjustinputRange(getEl("brightnessinput"), "", true);
         adjustinputRange(getEl("anim_speedinput"), "anim", true);
@@ -313,11 +331,11 @@
             else return document.getElementById(element);
         }
 
-        function initAnimationList(animation_list){
+        function initAnimationList(animation_list) {
             animation_list = animation_list.filter(n => n);
             console.log(animation_list);
             let list = getEl("animation_list", false);
-            if(list.childElementCount > 0)
+            if (list.childElementCount > 0)
                 list.replaceChildren()
 
             for (let i = 0; i < animation_list.length; i++) {
@@ -353,8 +371,8 @@
                 });
         })();
 
-        function movePanel(position){
-            if(position == 0){
+        function movePanel(position) {
+            if (position == 0) {
                 lightPanelButton.classList.add("selectedPanel");
                 animationsPanelButton.classList.remove("selectedPanel");
                 mainPanel.classList.remove("main_panel_animations");
@@ -365,7 +383,7 @@
             }
         }
 
-        function changeColorInput_BGColor(ele){
+        function changeColorInput_BGColor(ele) {
             ele.style.background = ele.value;
         }
 
@@ -385,9 +403,9 @@
             getEl("confirm_btn", false).style.visibility = "visible";
         }
 
-        function adjustinputRange(ele, type, init = false){
-            if(!init){
-                if(type == "anim"){
+        function adjustinputRange(ele, type, init = false) {
+            if (!init) {
+                if (type == "anim") {
                     getEl("anim_speed_value").innerText = ele.value;
                 } else {
                     getEl("birghtness_value").innerText = ((ele.value / 255) * 100).toFixed(0) + '%';
@@ -397,7 +415,7 @@
             const minVal = ele.min;
             const maxVal = ele.max;
             const currentVal = ele.value;
-  
+
             ele.style.backgroundSize = (currentVal - minVal) * 100 / (maxVal - minVal) + '% 100%'
         }
     </script>
@@ -426,7 +444,7 @@
                 .catch(error => console.error(error));
         }
 
-        function sendAnimation(ele){
+        function sendAnimation(ele) {
             fetch('http://192.168.178.52/animationType?value=' + ele.innerText)
                 .then(response => response.text())
                 .then(data => console.log(data));
